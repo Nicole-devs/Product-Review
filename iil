@@ -1,0 +1,87 @@
+# app/models/user.rb
+class User < ApplicationRecord
+    has_many :reviews
+    has_many :products, through: :reviews
+  
+    def favorite_product
+      products.joins(:reviews).where(reviews: {user_id: id}).order('reviews.star_rating DESC').first
+    end
+  
+    def remove_reviews(product)
+      reviews.where(product: product).destroy_all
+    end
+  end
+  
+  # app/models/product.rb
+  class Product < ApplicationRecord
+    has_many :reviews
+    has_many :users, through: :reviews
+  
+    def leave_review(user, star_rating, comment)
+      reviews.create(user: user, star_rating: star_rating, comment: comment)
+    end
+  
+    def print_all_reviews
+      reviews.each do |review|
+        review.print_review
+      end
+    end
+  
+    def average_rating
+      reviews.average(:star_rating)
+    end
+  end
+  
+  # app/models/review.rb
+class Review < ApplicationRecord
+    belongs_to :product
+    belongs_to :user
+
+    def print_review
+        puts "Review for #{product.name} by #{user.name}: #{star_rating}. #{comment}"
+    end
+end
+  
+
+
+class Review < ActiveRecord::Base
+    belongs_to :product
+    belongs_to :user
+  
+    def print_review
+      puts "Review for #{product.name} by #{user.name}: #{star_rating}. #{comment}"
+    end
+  end
+  
+class Product < ActiveRecord::Base
+    has_many :reviews
+    has_many :users, through: :reviews
+
+    def leave_review(user, star_rating, comment)
+        reviews.create(user: user, star_rating: star_rating, comment: comment)
+    end
+
+    def print_all_reviews
+        reviews.each do |review|
+        review.print_review
+        end
+    end
+
+    def average_rating
+        reviews.average(:star_rating)
+    end
+end
+  
+  class User < ActiveRecord::Base
+    has_many :reviews
+    has_many :products, through: :reviews
+  
+    def favorite_product
+      products.joins(:reviews).where(reviews: {user_id: id}).order('reviews.star_rating DESC').first
+    end
+  
+    def remove_reviews(product)
+      reviews.where(product: product).destroy_all
+    end
+  end
+  
