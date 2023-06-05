@@ -6,12 +6,14 @@ class Product < ActiveRecord::Base
       reviews.create(user: user, star_rating: star_rating, comment: comment)
   end
 
+
   def print_all_reviews
       reviews.each do |review|
       review.print_review
       end
   end
 
+  
   def average_rating
       reviews.average(:star_rating)
   end
